@@ -1,0 +1,2 @@
+﻿  Redis없이테스트용.cpp
+C:\Users\asus\OneDrive\바탕 화면\새 폴더 (6)\how_to_use_redis_lib\cpp\RedisCpp-hiredis\src\CRedisConn.h(21,10): fatal  error C1083: 포함 파일을 열 수 없습니다. 'hiredis.h': No such file or directory
