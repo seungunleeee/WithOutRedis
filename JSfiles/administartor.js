@@ -9,90 +9,41 @@ UDPsocket.bind(3004);
 UDPsocket.on("listening", function () {
   console.log("listening event");
 });
-var start = 0;
-var msg = Buffer("HELLO!");
-UDPsocket.send(msg, 0, msg.length, 3001, "15.165.22.113", function (err) {
-  if (err) {
-    console.log("UDP message send error", err);
-    return;
-  }
-});
 
 UDPsocket.on("message", function (msg, rinfo) {
-  console.log("!! 응답 : " + msg, " info : " + rinfo);
-  console.log("응답 : " + msg);
-  if (start == 0) {
-    var result = JSON.parse(msg);
-    retAddress = result.address;
-    retPort = result.port;
-    socket.write(
-      "Administrator,Enrollment,Daegu_Susung_Bumadong-" +
-        "118.235.32.73" +
-        "-" +
-        "8000" +
-        "\0"
-    );
-
-    start += 1;
-  }
-  // 홀펀칭확이ㅏㄴ용
-  // var msg = Buffer("HELLO!");
-  // UDPsocket.send(msg, 0, msg.length, 3002, "211.107.138.20", function (err) {
-  //   if (err) {
-  //     console.log("UDP message send error", err);
-  //     return;
-  //   }
-
-  // socket.write("Rider Daegu/susung/bumaudong");
-
-  return;
+  console.log("!! 라이더로부터의 응답 : " + msg, " info : " + rinfo);
 });
 
-var socket = net.connect({ port: 8080, host: "127.0.0.1" });
+var socket = new net.Socket();
 
+socket = net.connect({ port: 8080, host: "15.165.129.230" });
+var msg = "Administrator,Enrollment,Daegu_Susung_Bumadong-" + 3004 + "\0";
 socket.on("connect", function () {
-  console.log("connected to server!");
+  socket.write(msg);
 });
 
 // 서버로부터 받은 데이터를 화면에 출력
 socket.on("data", function (chunk) {
   console.log("recv: 관제자가 받을 라이더의 UDP 정보" + chunk);
-  socket.end();
-  var IPlist = [];
-  var Portlist = [];
-  const str = String(chunk);
-  var temp = [];
 
-  temp = str.split("-");
-
-  for (var i = 0; i < temp.length; i++) {
-    console.log("결과 : " + temp[i]);
-    var UDPINFO = [];
-    UDPINFO = temp[i].split("|");
-    IPlist.push(UDPINFO[0]);
-    Portlist.push(UDPINFO[1]);
-    console.log("결과 값: " + IPlist[i] + " : " + Portlist[i]);
-  }
-
-  for (var i = 0; i < IPlist.length - 1; i++) {
-    var msg = Buffer("Hello "); // 공유기 IP테이블에 등록용입니다.
-    console.log("타입이뭐니???" + typeof Number(Portlist[i]));
-    console.log("port number :" + Number(Portlist[i]));
-    UDPsocket.send(
-      msg,
-      0,
-      msg.length,
-      Number(Portlist[i]),
-      IPlist[i],
-      function (err) {
-        if (err) {
-          console.log("UDP message send error", err);
-          return;
-        }
-        console.log("UDP 정보 공유기에 등록!!");
+  var INFO = chunk.toString().split("|");
+  INFO.forEach((element) => {
+    console.log("파싱후의 값 : " + element);
+  });
+  var toRider = "HELLO";
+  UDPsocket.send(
+    toRider,
+    0,
+    toRider.length,
+    parseInt(INFO[1]),
+    INFO[0],
+    function (err) {
+      if (err) {
+        console.log("UDP message send error", err);
+        return;
       }
-    );
-  }
+    }
+  );
 });
 // 접속이 종료됬을때 메시지 출력
 socket.on("end", function () {
@@ -106,3 +57,41 @@ socket.on("error", function (err) {
 socket.on("timeout", function () {
   console.log("connection timeout.");
 });
+
+//비스포크 냉장고
+// socket.end();
+// var IPlist = [];
+// var Portlist = [];
+// const str = String(chunk);
+// var temp = [];
+
+// temp = str.split("-");
+
+// for (var i = 0; i < temp.length; i++) {
+//   console.log("결과 : " + temp[i]);
+//   var UDPINFO = [];
+//   UDPINFO = temp[i].split("|");
+//   IPlist.push(UDPINFO[0]);
+//   Portlist.push(UDPINFO[1]);
+//   console.log("결과 값: " + IPlist[i] + " : " + Portlist[i]);
+// }
+
+// for (var i = 0; i < IPlist.length - 1; i++) {
+//   var msg = Buffer("Hello "); // 공유기 IP테이블에 등록용입니다.
+//   console.log("타입이뭐니???" + typeof Number(Portlist[i]));
+//   console.log("port number :" + Number(Portlist[i]));
+//   UDPsocket.send(
+//     msg,
+//     0,
+//     msg.length,
+//     Number(Portlist[i]),
+//     IPlist[i],
+//     function (err) {
+//       if (err) {
+//         console.log("UDP message send error", err);
+//         return;
+//       }
+//       console.log("UDP 정보 공유기에 등록!!");
+//     }
+//   );
+// }
